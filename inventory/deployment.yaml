@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory
+  namespace: warehouse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+      - name: inventory
+        image: warehouse-inventory:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8091
+        env:
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: KAFKA_BOOTSTRAPADDRESS
+          value: "kafka:9092"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://host.docker.internal:3306/testDb"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory
+  namespace: warehouse
+spec:
+  ports:
+    - port: 8091
+      targetPort: 8091
+  selector:
+    app: inventory

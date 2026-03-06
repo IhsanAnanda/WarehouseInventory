@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: warehouse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: warehouse-gateway:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8090
+        env:
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: KAFKA_BOOTSTRAPADDRESS
+          value: "kafka:9092"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://host.docker.internal:3306/testDb"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: warehouse
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8090
+      targetPort: 8090
+  selector:
+    app: gateway

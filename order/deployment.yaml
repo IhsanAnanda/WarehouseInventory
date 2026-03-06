@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order
+  namespace: warehouse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+      - name: order
+        image: warehouse-order:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8092
+        env:
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: KAFKA_BOOTSTRAPADDRESS
+          value: "kafka:9092"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://host.docker.internal:3306/testDb"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order
+  namespace: warehouse
+spec:
+  ports:
+    - port: 8092
+      targetPort: 8092
+  selector:
+    app: order
