@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: item
-        image: warehouse-item:latest
+        image: warehouse-item:redis
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8093

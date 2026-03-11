@@ -64,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Cacheable(value = "items", key = "#request.page + '-' + #request.maxRow")
     public GetItemDTO.Response getAllData(GetItemDTO.Request request) {
-        Pageable pageable = PageRequest.of(request.page != null ? request.page : 0, request.maxRow != null ? request.maxRow : 10);
+        Pageable pageable = PageRequest.of(request.getPage() != null ? request.getPage() : 0, request.getMaxRow() != null ? request.getMaxRow() : 10);
         Page<Item> dbResult = itemRepository.getAllData(pageable);
         if(dbResult.isEmpty()){
             return GetItemDTO.  Response.builder()
@@ -81,6 +81,26 @@ public class ItemServiceImpl implements ItemService {
         }
         return GetItemDTO.Response.builder().error(false).listResult(listResult).build();
     }
+
+    // @Override
+    // public GetItemDTO.Response getAllData(GetItemDTO.Request request) {
+    //     Pageable pageable = PageRequest.of(request.getPage(), request.getMaxRow());
+    //     Page<Item> dbResult = itemRepository.getAllData(pageable);
+    //     if(dbResult.isEmpty()){
+    //         return GetItemDTO.  Response.builder()
+    //                 .error(true)
+    //                 .message("No data found").build();
+    //     }
+    //     List<GetItemDTO.DataResp> listResult = new ArrayList<>();
+    //     for (Item it: dbResult) {
+    //         GetItemDTO.DataResp temp = new GetItemDTO.DataResp();
+    //         temp.setId(it.getId());
+    //         temp.setName(it.getName());
+    //         temp.setPrice(it.getPrice());
+    //         listResult.add(temp);
+    //     }
+    //     return GetItemDTO.Response.builder().error(false).listResult(listResult).build();
+    // }
 
     @Override
     public GetItemDTO.Response insertItem(GetItemDTO.Request request) {
